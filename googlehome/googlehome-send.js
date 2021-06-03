@@ -27,15 +27,17 @@ module.exports = function(RED) {
         this.closeMessage = config.close_message;
         this.continueAfter = config.continue_after;
 
+		// Node Input
         this.on('input', msg => {
             this.debug("GoogleHomeSendNode - Input Message Received");
             this.log(msg);
-
+			// If there is a message object
             if(msg && msg.res !== undefined && msg.res.conv !== undefined){
-
+				// Iterate google home messages if available
               if(msg.gh_messages && msg.gh_messages.length > 0){
                 msg.gh_messages.forEach( (m, idx) => {
                     if(m.type !== undefined){
+						// Check message type and ask/send accordingly
                         switch(m.type.toLowerCase()){
                             case "simpleresponse":
                                 msg.res.conv.ask(m.message);
@@ -90,6 +92,7 @@ module.exports = function(RED) {
                   msg.gh_messages = [];
               }
             }
+			// Send message object
             this.send(msg);
         });
 

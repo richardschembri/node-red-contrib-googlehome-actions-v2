@@ -18,15 +18,15 @@ module.exports = function(RED) {
 
         this.name = config.name;
 
-        this.app = dialogflow();
+        this.app = dialogflow(); // Actions on Google Dialogflow
 
         this.getApp = () => {
           return this.app;
         };
 
-        RED.events.on('nodes-started', msg => {
+		RED.events.on('flows:started', msg => {
           this.log("Sending Controller");
-
+		  // Forward to next node
           this.send([{
             topic: "googlehome-controller",
             payload: this
@@ -36,12 +36,15 @@ module.exports = function(RED) {
         this.on('input', msg => {
             console.debug("GoogleHomeControllerNode - Input Message Received");
             console.log(msg);
-
+			// Parse payload and request
             if(msg && msg.payload && msg.req && msg.res){
               this.app(msg.payload, msg.req.headers).then( (res) => {
                 this.warn("Finish Intent");
                 this.warn(res);
 
+				// Multiple outputs, second output is for HTTP response
+				// - First : null (for the sake of continueing the flow)
+				// - Second: HTTP Response
                 this.send([null,{
                   payload: res.body,
                   headers: res.headers,
@@ -62,5 +65,6 @@ module.exports = function(RED) {
 
     }
 
+	// Register this node
     RED.nodes.registerType("googlehome-controller", GoogleHomeControllerNode);
 };

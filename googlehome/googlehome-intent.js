@@ -21,7 +21,9 @@ module.exports = function(RED) {
             this.debug("GoogleHomeIntentNode - Input Message Received");
             this.log(msg);
 
+			// If msg from Google Home Controller
             if(msg && msg.topic == "googlehome-controller"){
+				// Set in Controller
                 this.app = msg.payload.getApp();
                 this.app.intent(this.intent, (conv, ...params) => {
                   return new Promise( (resolv, reject) => {
@@ -48,6 +50,6 @@ module.exports = function(RED) {
             console.debug("Closed");
         });
     }
-
+	// Register this node
     RED.nodes.registerType("googlehome-intent", GoogleHomeIntentNode);
 };
